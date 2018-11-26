@@ -140,13 +140,16 @@ NSInteger const ATLQueryControllerPaginationWindow = 30;
         [weakSelf finishExpandingPaginationWindow];
     }];
     self.messageCountBeforeSync = self.queryController.count;
-    BOOL success = [self.conversation synchronizeMoreMessages:numberOfMessagesToSynchronize error:&error];
-    if (!success) {
-        if (observer) {
-            [[NSNotificationCenter defaultCenter] removeObserver:observer];
+    
+    if ([self.conversation respondsToSelector:@selector(synchronizeMoreMessages:error:)]) {        
+        BOOL success = [self.conversation synchronizeMoreMessages:numberOfMessagesToSynchronize error:&error];
+        if (!success) {
+            if (observer) {
+                [[NSNotificationCenter defaultCenter] removeObserver:observer];
+            }
+            [weakSelf finishExpandingPaginationWindow];
+            return;
         }
-        [weakSelf finishExpandingPaginationWindow];
-        return;
     }
 }
 
